@@ -7,6 +7,10 @@
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Bootstrap para mejor diseño -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
     
     <style>
         * {
@@ -31,47 +35,79 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
         
         .header h1 {
             margin: 0;
             font-size: 1.5rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
-        .layer-toggle {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            padding: 0.5rem;
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background: white;
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .layer-controls {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
         }
         
-        .layer-toggle button {
-            padding: 0.3rem 0.8rem;
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
+        .layer-control-group {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 87, 153, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .layer-toggle-btn {
+            padding: 0.5rem 0.8rem;
+            background: transparent;
             border: none;
-            border-radius: 3px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .layer-toggle-btn i {
+            font-size: 16px;
+        }
+        
+        .layer-toggle-btn.active {
+            background: #1e5799;
+            color: white;
+        }
+        
+        .layer-visibility-btn {
+            padding: 0.5rem;
+            background: rgba(30, 87, 153, 0.2);
+            border: none;
+            cursor: pointer;
+            color: #1e5799;
             transition: all 0.3s;
         }
         
-        .layer-toggle button.active {
-            background: white;
-            color: #1e5799;
-            font-weight: 600;
+        .layer-visibility-btn:hover {
+            background: rgba(30, 87, 153, 0.3);
         }
         
-        .controls {
-            background: white;
-            padding: 1rem;
-            border-bottom: 1px solid #e0e0e0;
+        .search-container {
             display: flex;
-            gap: 1rem;
-            align-items: center;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
         
@@ -99,10 +135,46 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
         }
         
         .search-box button:hover {
             background: #18467e;
+        }
+        
+        .advanced-filters {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            border: 1px solid #e0e0e0;
+            display: none;
+        }
+        
+        .advanced-filters.active {
+            display: block;
+        }
+        
+        .filter-group {
+            margin-bottom: 0.5rem;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.2rem;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 0.3rem;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
         }
         
         .info-panel {
@@ -112,6 +184,8 @@
             color: #666;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         
         .map-container {
@@ -162,34 +236,69 @@
         .leaflet-popup-content-wrapper {
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 0;
+            overflow: hidden;
         }
         
         .popup-content {
-            max-width: 300px;
+            max-width: 350px;
         }
         
-        .popup-content h3 {
-            margin: 0 0 0.5rem 0;
-            color: #333;
-            font-size: 16px;
+        .popup-header {
+            background: #1e5799;
+            color: white;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .popup-tabs {
+            display: flex;
             border-bottom: 1px solid #eee;
-            padding-bottom: 0.3rem;
         }
         
-        .popup-content .field {
+        .popup-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .popup-tab.active {
+            border-bottom: 2px solid #1e5799;
+            font-weight: 600;
+        }
+        
+        .popup-tab-content {
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .popup-tab-pane {
+            display: none;
+        }
+        
+        .popup-tab-pane.active {
+            display: block;
+        }
+        
+        .field {
             margin-bottom: 0.4rem;
             font-size: 14px;
             display: flex;
         }
         
-        .popup-content .field strong {
+        .field strong {
             color: #555;
             min-width: 120px;
         }
         
-        .popup-content .field span {
+        .field span {
             color: #777;
             flex: 1;
+            word-break: break-word;
         }
         
         .legend {
@@ -206,6 +315,9 @@
             margin-bottom: 0.5rem;
             color: #1e5799;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .legend-item {
@@ -254,23 +366,66 @@
             padding: 0.2rem 0.5rem;
             border-radius: 3px;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .export-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .export-btn:hover {
+            background: #218838;
+        }
+        
+        .toggle-filters-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .toggle-filters-btn:hover {
+            background: #5a6268;
         }
         
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.8rem;
             }
             
-            .layer-toggle {
+            .controls-container {
+                padding: 0.8rem;
+            }
+            
+            .layer-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .layer-control-group {
                 width: 100%;
-                justify-content: center;
             }
             
             .info-panel {
                 flex-direction: column;
-                gap: 0.5rem;
             }
             
             .stats {
@@ -282,37 +437,103 @@
 </head>
 <body>
     <div class="header">
-        <h1>🗺️ Geovisor - Información Geográfica Cantón Azogues</h1>
-        <div class="layer-toggle">
-            <button id="toggleRios" class="active">Ríos</button>
-            <button id="toggleVias">Vías</button>
-            <button id="togglePoblados">Poblados</button>
-            <button id="toggleCurvas">Curvas</button>
-            <button id="toggleAreas">Áreas</button>
-        </div>
+        <h1><i class="fas fa-map-marked-alt"></i> Geovisor - Información Geográfica Cantón Azogues</h1>
     </div>
     
-    <div class="controls">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Buscar por nombre..." />
-            <button onclick="buscarElemento()">🔍 Buscar</button>
-            <button onclick="limpiarBusqueda()">✖️ Limpiar</button>
+    <div class="controls-container">
+        <div class="layer-controls">
+            <div class="layer-control-group">
+                <button class="layer-toggle-btn active" id="toggleRios" title="Mostrar capa de ríos">
+                    <i class="fas fa-water"></i> Ríos
+                </button>
+                <button class="layer-visibility-btn" id="visibilityRios" title="Mostrar/ocultar ríos">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            
+            <div class="layer-control-group">
+                <button class="layer-toggle-btn" id="toggleVias" title="Mostrar capa de vías">
+                    <i class="fas fa-road"></i> Vías
+                </button>
+                <button class="layer-visibility-btn" id="visibilityVias" title="Mostrar/ocultar vías">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            
+            <div class="layer-control-group">
+                <button class="layer-toggle-btn" id="togglePoblados" title="Mostrar capa de poblados">
+                    <i class="fas fa-home"></i> Poblados
+                </button>
+                <button class="layer-visibility-btn" id="visibilityPoblados" title="Mostrar/ocultar poblados">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            
+            <div class="layer-control-group">
+                <button class="layer-toggle-btn" id="toggleCurvas" title="Mostrar capa de curvas">
+                    <i class="fas fa-mountain"></i> Curvas
+                </button>
+                <button class="layer-visibility-btn" id="visibilityCurvas" title="Mostrar/ocultar curvas">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            
+            <div class="layer-control-group">
+                <button class="layer-toggle-btn" id="toggleAreas" title="Mostrar capa de áreas">
+                    <i class="fas fa-tree"></i> Áreas
+                </button>
+                <button class="layer-visibility-btn" id="visibilityAreas" title="Mostrar/ocultar áreas">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar por nombre..." />
+                <button onclick="buscarElemento()"><i class="fas fa-search"></i> Buscar</button>
+                <button onclick="limpiarBusqueda()"><i class="fas fa-times"></i> Limpiar</button>
+                <button class="toggle-filters-btn" id="toggleFiltersBtn" onclick="toggleAdvancedFilters()">
+                    <i class="fas fa-filter"></i> Filtros
+                </button>
+                <button class="export-btn" onclick="exportarDatos()">
+                    <i class="fas fa-file-export"></i> Exportar
+                </button>
+            </div>
+            
+            <div class="advanced-filters" id="advancedFilters">
+                <div class="filter-group">
+                    <label for="filterField">Campo:</label>
+                    <select id="filterField">
+                        <option value="nam">Nombre</option>
+                        <option value="descriptio">Descripción</option>
+                        <option value="fcode">Código</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterValue">Valor:</label>
+                    <input type="text" id="filterValue" placeholder="Valor a filtrar">
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="aplicarFiltro()">Aplicar Filtro</button>
+                <button class="btn btn-sm btn-secondary" onclick="limpiarFiltro()">Limpiar Filtro</button>
+            </div>
         </div>
     </div>
     
     <div class="info-panel">
         <span id="infoText">Cargando datos geográficos...</span>
         <div class="stats">
-            <div class="stat-item" id="riosStat">Ríos: 0</div>
-            <div class="stat-item" id="viasStat">Vías: 0</div>
-            <div class="stat-item" id="pobladosStat">Poblados: 0</div>
-            <div class="stat-item" id="curvasStat">Curvas: 0</div>
-            <div class="stat-item" id="areasStat">Áreas: 0</div>
+            <div class="stat-item" id="riosStat"><i class="fas fa-water"></i> Ríos: 0</div>
+            <div class="stat-item" id="viasStat"><i class="fas fa-road"></i> Vías: 0</div>
+            <div class="stat-item" id="pobladosStat"><i class="fas fa-home"></i> Poblados: 0</div>
+            <div class="stat-item" id="curvasStat"><i class="fas fa-mountain"></i> Curvas: 0</div>
+            <div class="stat-item" id="areasStat"><i class="fas fa-tree"></i> Áreas: 0</div>
         </div>
     </div>
     
     <div class="map-container">
         <div id="loading" class="loading">
+            <div><i class="fas fa-globe-americas fa-2x" style="color: #1e5799; margin-bottom: 1rem;"></i></div>
             <div>🌍 Cargando datos geográficos...</div>
             <div id="loadingDetail" style="margin-top: 0.5rem; font-size: 14px; color: #666;">
                 Iniciando conexión con Supabase
@@ -326,6 +547,12 @@
 
     <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <!-- Font Awesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- PapaParse para exportar CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     
     <script>
         // Configuración Supabase
@@ -345,6 +572,17 @@
         let allAreas = [];
         let currentLayer = 'rios';
         let hasDataLoaded = false;
+        let layerVisibility = {
+            rios: true,
+            vias: true,
+            poblados: true,
+            curvas: true,
+            areas: true
+        };
+        let currentFilters = {
+            field: '',
+            value: ''
+        };
         
         // Inicializar mapa
         function initMap() {
@@ -361,7 +599,7 @@
             legend.onAdd = function() {
                 const div = L.DomUtil.create('div', 'legend');
                 div.innerHTML = `
-                    <div class="legend-title">Leyenda</div>
+                    <div class="legend-title"><i class="fas fa-map-signs"></i> Leyenda</div>
                     <div class="legend-item">
                         <div class="legend-color" style="background-color:#1e90ff"></div>
                         <span>Ríos</span>
@@ -851,86 +1089,171 @@
         
         // Crear popup para ríos
         function crearPopupRio(rio) {
-            return `
-                <div class="popup-content">
-                    <h3>${rio.nam || 'Río'}</h3>
-                    ${rio.fcode ? `<div class="field"><strong>Código:</strong> <span>${rio.fcode}</span></div>` : ''}
-                    ${rio.descripcio ? `<div class="field"><strong>Descripción:</strong> <span>${rio.descripcio}</span></div>` : ''}
-                    ${rio.naz ? `<div class="field"><strong>Naz:</strong> <span>${rio.naz}</span></div>` : ''}
-                    ${rio.sec ? `<div class="field"><strong>Sec:</strong> <span>${rio.sec}</span></div>` : ''}
-                    ${rio.sec_desc ? `<div class="field"><strong>Sec Desc:</strong> <span>${rio.sec_desc}</span></div>` : ''}
-                    ${rio.hyp ? `<div class="field"><strong>Hyp:</strong> <span>${rio.hyp}</span></div>` : ''}
-                    ${rio.hyp_desc ? `<div class="field"><strong>Hyp Desc:</strong> <span>${rio.hyp_desc}</span></div>` : ''}
-                    ${rio.txt ? `<div class="field"><strong>Info:</strong> <span>${rio.txt}</span></div>` : ''}
-                    ${rio.Shape_Leng ? `<div class="field"><strong>Longitud:</strong> <span>${rio.Shape_Leng.toFixed(2)} m</span></div>` : ''}
-                </div>
-            `;
+            const generalFields = [
+                { label: 'Nombre', value: rio.nam },
+                { label: 'Código', value: rio.fcode },
+                { label: 'Descripción', value: rio.descripcio },
+                { label: 'Naz', value: rio.naz }
+            ];
+            
+            const detallesFields = [
+                { label: 'Sec', value: rio.sec },
+                { label: 'Sec Desc', value: rio.sec_desc },
+                { label: 'Hyp', value: rio.hyp },
+                { label: 'Hyp Desc', value: rio.hyp_desc },
+                { label: 'Longitud', value: rio.Shape_Leng ? `${rio.Shape_Leng.toFixed(2)} m` : null }
+            ];
+            
+            const otrosFields = Object.entries(rio)
+                .filter(([key]) => !['nam', 'fcode', 'descripcio', 'naz', 'sec', 'sec_desc', 'hyp', 'hyp_desc', 'Shape_Leng', 'geom'].includes(key))
+                .map(([key, value]) => ({ label: key, value }));
+            
+            return crearPopupConPestanas('Río', 'fa-water', generalFields, detallesFields, otrosFields);
         }
         
         // Crear popup para vías
         function crearPopupVia(via) {
-            return `
-                <div class="popup-content">
-                    <h3>${via.nam || 'Vía'}</h3>
-                    ${via.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${via.descriptio}</span></div>` : ''}
-                    ${via.acc ? `<div class="field"><strong>Acc:</strong> <span>${via.acc}</span></div>` : ''}
-                    ${via.acc_desc ? `<div class="field"><strong>Acc Desc:</strong> <span>${via.acc_desc}</span></div>` : ''}
-                    ${via.rst ? `<div class="field"><strong>Rst:</strong> <span>${via.rst}</span></div>` : ''}
-                    ${via.rst_desc ? `<div class="field"><strong>Rst Desc:</strong> <span>${via.rst_desc}</span></div>` : ''}
-                    ${via.typ ? `<div class="field"><strong>Typ:</strong> <span>${via.typ}</span></div>` : ''}
-                    ${via.typ_desc ? `<div class="field"><strong>Typ Desc:</strong> <span>${via.typ_desc}</span></div>` : ''}
-                    ${via.loc ? `<div class="field"><strong>Loc:</strong> <span>${via.loc}</span></div>` : ''}
-                    ${via.loc_desc ? `<div class="field"><strong>Loc Desc:</strong> <span>${via.loc_desc}</span></div>` : ''}
-                    ${via.txt ? `<div class="field"><strong>Info:</strong> <span>${via.txt}</span></div>` : ''}
-                </div>
-            `;
+            const generalFields = [
+                { label: 'Nombre', value: via.nam },
+                { label: 'Descripción', value: via.descriptio }
+            ];
+            
+            const detallesFields = [
+                { label: 'Acc', value: via.acc },
+                { label: 'Acc Desc', value: via.acc_desc },
+                { label: 'Rst', value: via.rst },
+                { label: 'Rst Desc', value: via.rst_desc },
+                { label: 'Typ', value: via.typ },
+                { label: 'Typ Desc', value: via.typ_desc }
+            ];
+            
+            const otrosFields = Object.entries(via)
+                .filter(([key]) => !['nam', 'descriptio', 'acc', 'acc_desc', 'rst', 'rst_desc', 'typ', 'typ_desc', 'geom'].includes(key))
+                .map(([key, value]) => ({ label: key, value }));
+            
+            return crearPopupConPestanas('Vía', 'fa-road', generalFields, detallesFields, otrosFields);
         }
         
         // Crear popup para poblados
         function crearPopupPoblado(poblado) {
-            return `
-                <div class="popup-content">
-                    <h3>${poblado.nam || 'Poblado'}</h3>
-                    ${poblado.fcode ? `<div class="field"><strong>Código:</strong> <span>${poblado.fcode}</span></div>` : ''}
-                    ${poblado.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${poblado.descriptio}</span></div>` : ''}
-                    ${poblado.naz ? `<div class="field"><strong>Naz:</strong> <span>${poblado.naz}</span></div>` : ''}
-                    ${poblado.ppt ? `<div class="field"><strong>Ppt:</strong> <span>${poblado.ppt}</span></div>` : ''}
-                    ${poblado.ppt_desc ? `<div class="field"><strong>Ppt Desc:</strong> <span>${poblado.ppt_desc}</span></div>` : ''}
-                    ${poblado.nuts ? `<div class="field"><strong>Nuts:</strong> <span>${poblado.nuts}</span></div>` : ''}
-                    ${poblado.txt ? `<div class="field"><strong>Info:</strong> <span>${poblado.txt}</span></div>` : ''}
-                </div>
-            `;
+            const generalFields = [
+                { label: 'Nombre', value: poblado.nam },
+                { label: 'Código', value: poblado.fcode },
+                { label: 'Descripción', value: poblado.descriptio }
+            ];
+            
+            const detallesFields = [
+                { label: 'Naz', value: poblado.naz },
+                { label: 'Ppt', value: poblado.ppt },
+                { label: 'Ppt Desc', value: poblado.ppt_desc },
+                { label: 'Nuts', value: poblado.nuts }
+            ];
+            
+            const otrosFields = Object.entries(poblado)
+                .filter(([key]) => !['nam', 'fcode', 'descriptio', 'naz', 'ppt', 'ppt_desc', 'nuts', 'geom'].includes(key))
+                .map(([key, value]) => ({ label: key, value }));
+            
+            return crearPopupConPestanas('Poblado', 'fa-home', generalFields, detallesFields, otrosFields);
         }
         
         // Crear popup para curvas de nivel
         function crearPopupCurva(curva) {
-            return `
-                <div class="popup-content">
-                    <h3>${curva.foods || 'Curva de Nivel'}</h3>
-                    ${curva.id ? `<div class="field"><strong>ID:</strong> <span>${curva.id}</span></div>` : ''}
-                    ${curva.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${curva.descriptio}</span></div>` : ''}
-                    ${curva.acc ? `<div class="field"><strong>Acc:</strong> <span>${curva.acc}</span></div>` : ''}
-                    ${curva.acc_desc ? `<div class="field"><strong>Acc Desc:</strong> <span>${curva.acc_desc}</span></div>` : ''}
-                    ${curva.hqc ? `<div class="field"><strong>HQC:</strong> <span>${curva.hqc}</span></div>` : ''}
-                    ${curva.hqc_desc ? `<div class="field"><strong>HQC Desc:</strong> <span>${curva.hqc_desc}</span></div>` : ''}
-                    ${curva.ela ? `<div class="field"><strong>ELA:</strong> <span>${curva.ela}</span></div>` : ''}
-                    ${curva.ela_desc ? `<div class="field"><strong>ELA Desc:</strong> <span>${curva.ela_desc}</span></div>` : ''}
-                    ${curva.crv ? `<div class="field"><strong>Elevación:</strong> <span>${curva.crv} m</span></div>` : ''}
-                    ${curva.txt ? `<div class="field"><strong>Info:</strong> <span>${curva.txt}</span></div>` : ''}
-                    ${curva.SHAPE_Leng ? `<div class="field"><strong>Longitud:</strong> <span>${curva.SHAPE_Leng.toFixed(2)} m</span></div>` : ''}
-                </div>
-            `;
+            const generalFields = [
+                { label: 'Nombre', value: curva.foods },
+                { label: 'ID', value: curva.id },
+                { label: 'Descripción', value: curva.descriptio },
+                { label: 'Elevación', value: curva.crv ? `${curva.crv} m` : null }
+            ];
+            
+            const detallesFields = [
+                { label: 'Acc', value: curva.acc },
+                { label: 'Acc Desc', value: curva.acc_desc },
+                { label: 'HQC', value: curva.hqc },
+                { label: 'HQC Desc', value: curva.hqc_desc },
+                { label: 'ELA', value: curva.ela },
+                { label: 'ELA Desc', value: curva.ela_desc },
+                { label: 'Longitud', value: curva.SHAPE_Leng ? `${curva.SHAPE_Leng.toFixed(2)} m` : null }
+            ];
+            
+            const otrosFields = Object.entries(curva)
+                .filter(([key]) => !['foods', 'id', 'descriptio', 'crv', 'acc', 'acc_desc', 'hqc', 'hqc_desc', 'ela', 'ela_desc', 'SHAPE_Leng', 'geom'].includes(key))
+                .map(([key, value]) => ({ label: key, value }));
+            
+            return crearPopupConPestanas('Curva de Nivel', 'fa-mountain', generalFields, detallesFields, otrosFields);
         }
         
         // Crear popup para áreas protegidas
         function crearPopupArea(area) {
+            const generalFields = [
+                { label: 'Nombre', value: area.nam },
+                { label: 'ID', value: area.id },
+                { label: 'Código', value: area.icode },
+                { label: 'Descripción', value: area.descriptio }
+            ];
+            
+            const detallesFields = [
+                { label: 'Foods', value: area.foods },
+                { label: 'Info', value: area.txt }
+            ];
+            
+            const otrosFields = Object.entries(area)
+                .filter(([key]) => !['nam', 'id', 'icode', 'descriptio', 'foods', 'txt', 'geom'].includes(key))
+                .map(([key, value]) => ({ label: key, value }));
+            
+            return crearPopupConPestanas('Área Protegida', 'fa-tree', generalFields, detallesFields, otrosFields);
+        }
+        
+        // Crear popup con pestañas
+        function crearPopupConPestanas(titulo, icono, generalFields, detallesFields, otrosFields) {
+            const generalContent = generalFields
+                .filter(field => field.value !== null && field.value !== undefined && field.value !== '')
+                .map(field => `
+                    <div class="field">
+                        <strong>${field.label}:</strong>
+                        <span>${field.value}</span>
+                    </div>
+                `).join('');
+            
+            const detallesContent = detallesFields
+                .filter(field => field.value !== null && field.value !== undefined && field.value !== '')
+                .map(field => `
+                    <div class="field">
+                        <strong>${field.label}:</strong>
+                        <span>${field.value}</span>
+                    </div>
+                `).join('');
+            
+            const otrosContent = otrosFields
+                .filter(field => field.value !== null && field.value !== undefined && field.value !== '')
+                .map(field => `
+                    <div class="field">
+                        <strong>${field.label}:</strong>
+                        <span>${field.value}</span>
+                    </div>
+                `).join('');
+            
             return `
                 <div class="popup-content">
-                    <h3>${area.nam || 'Área Protegida'}</h3>
-                    ${area.id ? `<div class="field"><strong>ID:</strong> <span>${area.id}</span></div>` : ''}
-                    ${area.icode ? `<div class="field"><strong>Código:</strong> <span>${area.icode}</span></div>` : ''}
-                    ${area.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${area.descriptio}</span></div>` : ''}
-                    ${area.txt ? `<div class="field"><strong>Info:</strong> <span>${area.txt}</span></div>` : ''}
+                    <div class="popup-header">
+                        <i class="fas ${icono}"></i>
+                        <h3>${titulo}</h3>
+                    </div>
+                    <div class="popup-tabs">
+                        <div class="popup-tab active" onclick="cambiarPestana(this, 'general')">General</div>
+                        <div class="popup-tab" onclick="cambiarPestana(this, 'detalles')">Detalles</div>
+                        <div class="popup-tab" onclick="cambiarPestana(this, 'otros')">Otros</div>
+                    </div>
+                    <div class="popup-tab-content">
+                        <div class="popup-tab-pane active" id="general">
+                            ${generalContent || '<p>No hay información general disponible</p>'}
+                        </div>
+                        <div class="popup-tab-pane" id="detalles">
+                            ${detallesContent || '<p>No hay detalles adicionales</p>'}
+                        </div>
+                        <div class="popup-tab-pane" id="otros">
+                            ${otrosContent || '<p>No hay otros campos con información</p>'}
+                        </div>
+                    </div>
                 </div>
             `;
         }
@@ -939,73 +1262,200 @@
         function toggleLayer(layer) {
             currentLayer = layer;
             
-            // Ocultar todas las capas primero
-            riosLayer.remove();
-            viasLayer.remove();
-            pobladosLayer.remove();
-            curvasLayer.remove();
-            areasLayer.remove();
-            
             // Quitar clase activa de todos los botones
-            document.querySelectorAll('.layer-toggle button').forEach(btn => {
+            document.querySelectorAll('.layer-toggle-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // Activar la capa seleccionada
-            if (layer === 'rios') {
-                riosLayer.addTo(map);
-                document.getElementById('toggleRios').classList.add('active');
+            // Activar el botón seleccionado
+            document.getElementById(`toggle${capitalizeFirstLetter(layer)}`).classList.add('active');
+            
+            // Actualizar mensaje de información
+            const layerNames = {
+                rios: 'ríos',
+                vias: 'vías',
+                poblados: 'poblados',
+                curvas: 'curvas de nivel',
+                areas: 'áreas protegidas'
+            };
+            
+            document.getElementById('infoText').textContent = `✅ Capa de ${layerNames[layer]} activa`;
+            
+            // Si la capa está oculta, mostrarla al activarla
+            if (!layerVisibility[layer]) {
+                toggleLayerVisibility(layer);
+            }
+        }
+        
+        // Alternar visibilidad de capas
+        function toggleLayerVisibility(layer) {
+            const visibilityBtn = document.getElementById(`visibility${capitalizeFirstLetter(layer)}`);
+            
+            if (layerVisibility[layer]) {
+                // Ocultar capa
+                if (layer === 'rios') riosLayer.remove();
+                if (layer === 'vias') viasLayer.remove();
+                if (layer === 'poblados') pobladosLayer.remove();
+                if (layer === 'curvas') curvasLayer.remove();
+                if (layer === 'areas') areasLayer.remove();
+                
+                visibilityBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                visibilityBtn.title = 'Mostrar ' + layer;
+            } else {
+                // Mostrar capa
+                if (layer === 'rios') riosLayer.addTo(map);
+                if (layer === 'vias') viasLayer.addTo(map);
+                if (layer === 'poblados') pobladosLayer.addTo(map);
+                if (layer === 'curvas') curvasLayer.addTo(map);
+                if (layer === 'areas') areasLayer.addTo(map);
+                
+                visibilityBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                visibilityBtn.title = 'Ocultar ' + layer;
+            }
+            
+            layerVisibility[layer] = !layerVisibility[layer];
+        }
+        
+        // Capitalizar primera letra
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        // Cambiar pestaña en popup
+        function cambiarPestana(tabElement, tabId) {
+            const popupContent = tabElement.closest('.popup-content');
+            
+            // Desactivar todas las pestañas
+            popupContent.querySelectorAll('.popup-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            popupContent.querySelectorAll('.popup-tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Activar la pestaña seleccionada
+            tabElement.classList.add('active');
+            popupContent.querySelector(`#${tabId}`).classList.add('active');
+        }
+        
+        // Alternar filtros avanzados
+        function toggleAdvancedFilters() {
+            const filters = document.getElementById('advancedFilters');
+            filters.classList.toggle('active');
+        }
+        
+        // Aplicar filtro avanzado
+        function aplicarFiltro() {
+            const field = document.getElementById('filterField').value;
+            const value = document.getElementById('filterValue').value.trim().toLowerCase();
+            
+            if (!value) {
+                alert('Por favor ingrese un valor para filtrar');
+                return;
+            }
+            
+            currentFilters.field = field;
+            currentFilters.value = value;
+            
+            let elementosFiltrados = [];
+            let tipoElemento = '';
+            
+            if (currentLayer === 'rios') {
+                elementosFiltrados = allRios.filter(rio => {
+                    const campo = rio[field];
+                    return campo && campo.toString().toLowerCase().includes(value);
+                });
+                tipoElemento = 'ríos';
+                procesarRios(elementosFiltrados);
+            } 
+            else if (currentLayer === 'vias') {
+                elementosFiltrados = allVias.filter(via => {
+                    const campo = via[field];
+                    return campo && campo.toString().toLowerCase().includes(value);
+                });
+                tipoElemento = 'vías';
+                procesarVias(elementosFiltrados);
+            } 
+            else if (currentLayer === 'poblados') {
+                elementosFiltrados = allPoblados.filter(poblado => {
+                    const campo = poblado[field];
+                    return campo && campo.toString().toLowerCase().includes(value);
+                });
+                tipoElemento = 'poblados';
+                procesarPoblados(elementosFiltrados);
+            }
+            else if (currentLayer === 'curvas') {
+                elementosFiltrados = allCurvas.filter(curva => {
+                    const campo = curva[field];
+                    return campo && campo.toString().toLowerCase().includes(value);
+                });
+                tipoElemento = 'curvas de nivel';
+                procesarCurvas(elementosFiltrados);
+            }
+            else if (currentLayer === 'areas') {
+                elementosFiltrados = allAreas.filter(area => {
+                    const campo = area[field];
+                    return campo && campo.toString().toLowerCase().includes(value);
+                });
+                tipoElemento = 'áreas protegidas';
+                procesarAreas(elementosFiltrados);
+            }
+            
+            if (elementosFiltrados.length === 0) {
+                document.getElementById('infoText').textContent = `❌ No se encontraron ${tipoElemento} con ${field}="${value}"`;
+            } else {
+                document.getElementById('infoText').textContent = `🔍 ${elementosFiltrados.length} ${tipoElemento} encontrados con ${field}="${value}"`;
+                
+                // Ajustar vista a los resultados
+                let group;
+                if (currentLayer === 'rios' && riosLayer.getLayers().length > 0) {
+                    group = new L.featureGroup(riosLayer.getLayers());
+                } 
+                else if (currentLayer === 'vias' && viasLayer.getLayers().length > 0) {
+                    group = new L.featureGroup(viasLayer.getLayers());
+                } 
+                else if (currentLayer === 'poblados' && pobladosLayer.getLayers().length > 0) {
+                    group = new L.featureGroup(pobladosLayer.getLayers());
+                }
+                else if (currentLayer === 'curvas' && curvasLayer.getLayers().length > 0) {
+                    group = new L.featureGroup(curvasLayer.getLayers());
+                }
+                else if (currentLayer === 'areas' && areasLayer.getLayers().length > 0) {
+                    group = new L.featureGroup(areasLayer.getLayers());
+                }
+                
+                if (group) {
+                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                }
+            }
+        }
+        
+        // Limpiar filtro avanzado
+        function limpiarFiltro() {
+            document.getElementById('filterValue').value = '';
+            currentFilters.field = '';
+            currentFilters.value = '';
+            
+            if (currentLayer === 'rios') {
+                procesarRios(allRios);
                 document.getElementById('infoText').textContent = `✅ Capa de ríos activa`;
-                
-                // Ajustar vista si hay datos
-                if (riosLayer.getLayers().length > 0) {
-                    const group = new L.featureGroup(riosLayer.getLayers());
-                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
-                }
             } 
-            else if (layer === 'vias') {
-                viasLayer.addTo(map);
-                document.getElementById('toggleVias').classList.add('active');
+            else if (currentLayer === 'vias') {
+                procesarVias(allVias);
                 document.getElementById('infoText').textContent = `✅ Capa de vías activa`;
-                
-                // Ajustar vista si hay datos
-                if (viasLayer.getLayers().length > 0) {
-                    const group = new L.featureGroup(viasLayer.getLayers());
-                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
-                }
             } 
-            else if (layer === 'poblados') {
-                pobladosLayer.addTo(map);
-                document.getElementById('togglePoblados').classList.add('active');
+            else if (currentLayer === 'poblados') {
+                procesarPoblados(allPoblados);
                 document.getElementById('infoText').textContent = `✅ Capa de poblados activa`;
-                
-                // Ajustar vista si hay datos
-                if (pobladosLayer.getLayers().length > 0) {
-                    const group = new L.featureGroup(pobladosLayer.getLayers());
-                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
-                }
             }
-            else if (layer === 'curvas') {
-                curvasLayer.addTo(map);
-                document.getElementById('toggleCurvas').classList.add('active');
+            else if (currentLayer === 'curvas') {
+                procesarCurvas(allCurvas);
                 document.getElementById('infoText').textContent = `✅ Capa de curvas activa`;
-                
-                // Ajustar vista si hay datos
-                if (curvasLayer.getLayers().length > 0) {
-                    const group = new L.featureGroup(curvasLayer.getLayers());
-                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
-                }
             }
-            else if (layer === 'areas') {
-                areasLayer.addTo(map);
-                document.getElementById('toggleAreas').classList.add('active');
+            else if (currentLayer === 'areas') {
+                procesarAreas(allAreas);
                 document.getElementById('infoText').textContent = `✅ Capa de áreas activa`;
-                
-                // Ajustar vista si hay datos
-                if (areasLayer.getLayers().length > 0) {
-                    const group = new L.featureGroup(areasLayer.getLayers());
-                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
-                }
             }
         }
         
@@ -1177,8 +1627,64 @@
             }
         }
         
+        // Exportar datos a CSV
+        function exportarDatos() {
+            if (!hasDataLoaded) {
+                alert('Los datos aún se están cargando. Por favor espere.');
+                return;
+            }
+            
+            let datos = [];
+            let nombreArchivo = '';
+            
+            if (currentLayer === 'rios') {
+                datos = riosLayer.getLayers().map(layer => layer.feature.properties);
+                nombreArchivo = 'rios_azogues.csv';
+            } 
+            else if (currentLayer === 'vias') {
+                datos = viasLayer.getLayers().map(layer => layer.feature.properties);
+                nombreArchivo = 'vias_azogues.csv';
+            } 
+            else if (currentLayer === 'poblados') {
+                datos = pobladosLayer.getLayers().map(layer => layer.feature.properties);
+                nombreArchivo = 'poblados_azogues.csv';
+            }
+            else if (currentLayer === 'curvas') {
+                datos = curvasLayer.getLayers().map(layer => layer.feature.properties);
+                nombreArchivo = 'curvas_azogues.csv';
+            }
+            else if (currentLayer === 'areas') {
+                datos = areasLayer.getLayers().map(layer => layer.feature.properties);
+                nombreArchivo = 'areas_azogues.csv';
+            }
+            
+            if (datos.length === 0) {
+                alert('No hay datos visibles para exportar en la capa actual');
+                return;
+            }
+            
+            // Eliminar geometría para reducir tamaño del archivo
+            datos = datos.map(item => {
+                const { geom, ...rest } = item;
+                return rest;
+            });
+            
+            const csv = Papa.unparse(datos);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', nombreArchivo);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
         // Inicializar cuando se carga la página
         window.addEventListener('DOMContentLoaded', function() {
+            // Hacer las funciones de cambio de pestaña disponibles globalmente
+            window.cambiarPestana = cambiarPestana;
+            
             initMap();
             
             // Configurar botones de capas
@@ -1187,6 +1693,13 @@
             document.getElementById('togglePoblados').addEventListener('click', () => toggleLayer('poblados'));
             document.getElementById('toggleCurvas').addEventListener('click', () => toggleLayer('curvas'));
             document.getElementById('toggleAreas').addEventListener('click', () => toggleLayer('areas'));
+            
+            // Configurar botones de visibilidad
+            document.getElementById('visibilityRios').addEventListener('click', () => toggleLayerVisibility('rios'));
+            document.getElementById('visibilityVias').addEventListener('click', () => toggleLayerVisibility('vias'));
+            document.getElementById('visibilityPoblados').addEventListener('click', () => toggleLayerVisibility('poblados'));
+            document.getElementById('visibilityCurvas').addEventListener('click', () => toggleLayerVisibility('curvas'));
+            document.getElementById('visibilityAreas').addEventListener('click', () => toggleLayerVisibility('areas'));
             
             cargarDatos();
             
