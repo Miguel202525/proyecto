@@ -3,713 +3,1197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geoportal de Precipitaciones - Ecuador</title>
+    <title>Geovisor - Información Geográfica Cantón Azogues</title>
+    
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #f5f7fa;
         }
-
+        
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 1000;
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo i {
-            font-size: 2rem;
-            color: #4a90e2;
-        }
-
-        .logo h1 {
-            color: #2c3e50;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 2rem;
-            height: calc(100vh - 200px);
-        }
-
-        .map-container {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .map-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #4a90e2, #50c878, #f39c12, #e74c3c);
-        }
-
-        #map {
-            height: 100%;
-            border-radius: 15px;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .panel h3 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .panel h3 i {
-            color: #4a90e2;
-        }
-
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .control-group label {
-            font-weight: 600;
-            color: #34495e;
-            font-size: 0.9rem;
-        }
-
-        select, input[type="range"] {
-            padding: 0.75rem;
-            border: 2px solid #e0e6ed;
-            border-radius: 12px;
-            background: white;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        select:focus, input[type="range"]:focus {
-            outline: none;
-            border-color: #4a90e2;
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
             color: white;
             padding: 1rem;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .stat-value {
+        
+        .header h1 {
+            margin: 0;
             font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
+        
+        .layer-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
-
-        .legend {
-            background: rgba(255, 255, 255, 0.9);
+        
+        .layer-toggle button {
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .layer-toggle button.active {
+            background: white;
+            color: #1e5799;
+            font-weight: 600;
+        }
+        
+        .controls {
+            background: white;
             padding: 1rem;
-            border-radius: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
         }
-
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .search-box button {
+            padding: 0.5rem 1rem;
+            background: #1e5799;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .search-box button:hover {
+            background: #18467e;
+        }
+        
+        .info-panel {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.95);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .loading.hidden {
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #1e5799;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        /* Custom popup styles */
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .popup-content {
+            max-width: 300px;
+        }
+        
+        .popup-content h3 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3rem;
+        }
+        
+        .popup-content .field {
+            margin-bottom: 0.4rem;
+            font-size: 14px;
+            display: flex;
+        }
+        
+        .popup-content .field strong {
+            color: #555;
+            min-width: 120px;
+        }
+        
+        .popup-content .field span {
+            color: #777;
+            flex: 1;
+        }
+        
+        .legend {
+            background: white;
+            padding: 0.8rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            line-height: 1.4;
+            max-width: 200px;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e5799;
+            font-size: 14px;
+        }
+        
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .color-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
-        .province-info {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem;
-            border-radius: 15px;
-            margin-top: 1rem;
-        }
-
-        .province-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .province-data {
-            display: flex;
-            justify-content: space-between;
             margin-bottom: 0.3rem;
         }
-
-        .data-value {
-            font-weight: 600;
-            color: #4a90e2;
+        
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            margin-right: 0.7rem;
         }
-
-        .time-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .play-btn {
-            background: #4a90e2;
-            color: white;
-            border: none;
-            padding: 0.5rem;
+        
+        .legend-circle {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin-right: 0.7rem;
         }
-
-        .play-btn:hover {
-            background: #357abd;
-            transform: scale(1.1);
+        
+        .legend-area {
+            width: 20px;
+            height: 12px;
+            margin-right: 0.7rem;
+            opacity: 0.5;
         }
-
-        .month-display {
-            background: #f8f9fa;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            font-weight: 600;
-            color: #2c3e50;
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        @media (max-width: 1024px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-            
-            .map-container {
-                height: 60vh;
-            }
-            
-            .sidebar {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            
-            .panel {
-                flex: 1;
-                min-width: 300px;
-            }
-        }
-
-        .leaflet-popup-content-wrapper {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .leaflet-popup-content {
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 1rem;
+            border-radius: 4px;
             margin: 1rem;
-            font-family: inherit;
         }
-
-        .loading {
+        
+        .stats {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 200px;
-            font-size: 1.2rem;
-            color: #666;
+            gap: 0.5rem;
+            font-size: 12px;
+            flex-wrap: wrap;
         }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #4a90e2;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin-right: 1rem;
+        
+        .stat-item {
+            background: rgba(30, 87, 153, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            white-space: nowrap;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+            
+            .layer-toggle {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .info-panel {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .stats {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <i class="fas fa-cloud-rain"></i>
-                <h1>Geoportal de Precipitaciones - Ecuador</h1>
-            </div>
-            <div style="color: #666; font-size: 0.9rem;">
-                <i class="fas fa-calendar"></i> Datos meteorológicos actualizados
-            </div>
-        </div>
-    </header>
-
-    <div class="main-container">
-        <div class="dashboard">
-            <div class="map-container">
-                <div id="map"></div>
-            </div>
-
-            <div class="sidebar">
-                <div class="panel">
-                    <h3><i class="fas fa-sliders-h"></i> Controles</h3>
-                    <div class="controls">
-                        <div class="control-group">
-                            <label for="season-select">Temporada:</label>
-                            <select id="season-select">
-                                <option value="annual">Promedio Anual</option>
-                                <option value="wet">Época Lluviosa (Oct-May)</option>
-                                <option value="dry">Época Seca (Jun-Sep)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label for="data-type">Tipo de Datos:</label>
-                            <select id="data-type">
-                                <option value="precipitation">Precipitación (mm)</option>
-                                <option value="intensity">Intensidad Pluvial</option>
-                                <option value="days">Días de Lluvia</option>
-                            </select>
-                        </div>
-
-                        <div class="time-controls">
-                            <button class="play-btn" id="play-animation">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="month-display" id="current-month">Enero 2024</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <h3><i class="fas fa-chart-bar"></i> Estadísticas</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="max-precipitation">3,500</div>
-                            <div class="stat-label">Máxima (mm)</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="min-precipitation">250</div>
-                            <div class="stat-label">Mínima (mm)</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="avg-precipitation">1,200</div>
-                            <div class="stat-label">Promedio (mm)</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="total-provinces">24</div>
-                            <div class="stat-label">Provincias</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <h3><i class="fas fa-palette"></i> Leyenda</h3>
-                    <div class="legend" id="legend-container">
-                        <div class="legend-item">
-                            <div class="color-box" style="background: #d73027;"></div>
-                            <span>Muy Alta (>2500mm)</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="color-box" style="background: #fc8d59;"></div>
-                            <span>Alta (1500-2500mm)</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="color-box" style="background: #fee08b;"></div>
-                            <span>Media (800-1500mm)</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="color-box" style="background: #e0f3f8;"></div>
-                            <span>Baja (400-800mm)</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="color-box" style="background: #91bfdb;"></div>
-                            <span>Muy Baja (<400mm)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel" id="province-panel" style="display: none;">
-                    <h3><i class="fas fa-map-marker-alt"></i> Información Provincial</h3>
-                    <div id="province-details"></div>
-                </div>
-            </div>
+    <div class="header">
+        <h1>🗺️ Geovisor - Información Geográfica Cantón Azogues</h1>
+        <div class="layer-toggle">
+            <button id="toggleRios" class="active">Ríos</button>
+            <button id="toggleVias">Vías</button>
+            <button id="togglePoblados">Poblados</button>
+            <button id="toggleCurvas">Curvas</button>
+            <button id="toggleAreas">Áreas</button>
         </div>
     </div>
+    
+    <div class="controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre..." />
+            <button onclick="buscarElemento()">🔍 Buscar</button>
+            <button onclick="limpiarBusqueda()">✖️ Limpiar</button>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <span id="infoText">Cargando datos geográficos...</span>
+        <div class="stats">
+            <div class="stat-item" id="riosStat">Ríos: 0</div>
+            <div class="stat-item" id="viasStat">Vías: 0</div>
+            <div class="stat-item" id="pobladosStat">Poblados: 0</div>
+            <div class="stat-item" id="curvasStat">Curvas: 0</div>
+            <div class="stat-item" id="areasStat">Áreas: 0</div>
+        </div>
+    </div>
+    
+    <div class="map-container">
+        <div id="loading" class="loading">
+            <div>🌍 Cargando datos geográficos...</div>
+            <div id="loadingDetail" style="margin-top: 0.5rem; font-size: 14px; color: #666;">
+                Iniciando conexión con Supabase
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
 
+    <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    
     <script>
-        class EcuadorPrecipitationPortal {
-            constructor() {
-                this.map = null;
-                this.provinceLayer = null;
-                this.currentSeason = 'annual';
-                this.currentDataType = 'precipitation';
-                this.isAnimating = false;
-                this.currentMonth = 0;
-                this.months = [
-                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-                ];
-                
-                this.precipitationData = this.generatePrecipitationData();
-                this.initializeMap();
-                this.setupEventListeners();
-                this.updateVisualization();
-            }
-
-            generatePrecipitationData() {
-                const provinces = [
-                    { name: 'Azuay', coords: [-2.9, -78.9], annual: 1200, wet: 1800, dry: 600 },
-                    { name: 'Bolívar', coords: [-1.6, -79.0], annual: 800, wet: 1200, dry: 400 },
-                    { name: 'Cañar', coords: [-2.4, -78.9], annual: 900, wet: 1350, dry: 450 },
-                    { name: 'Carchi', coords: [0.7, -78.1], annual: 1100, wet: 1650, dry: 550 },
-                    { name: 'Chimborazo', coords: [-1.7, -78.7], annual: 600, wet: 900, dry: 300 },
-                    { name: 'Cotopaxi', coords: [-0.7, -78.6], annual: 1000, wet: 1500, dry: 500 },
-                    { name: 'El Oro', coords: [-3.3, -79.8], annual: 1500, wet: 2500, dry: 500 },
-                    { name: 'Esmeraldas', coords: [0.9, -79.7], annual: 2500, wet: 3500, dry: 1500 },
-                    { name: 'Galápagos', coords: [-0.4, -90.4], annual: 400, wet: 600, dry: 200 },
-                    { name: 'Guayas', coords: [-2.0, -79.9], annual: 1800, wet: 2800, dry: 800 },
-                    { name: 'Imbabura', coords: [0.4, -78.1], annual: 1200, wet: 1800, dry: 600 },
-                    { name: 'Loja', coords: [-4.0, -79.2], annual: 1100, wet: 1650, dry: 550 },
-                    { name: 'Los Ríos', coords: [-1.4, -79.5], annual: 2000, wet: 3000, dry: 1000 },
-                    { name: 'Manabí', coords: [-1.0, -80.4], annual: 1600, wet: 2600, dry: 600 },
-                    { name: 'Morona Santiago', coords: [-2.3, -78.1], annual: 2200, wet: 3200, dry: 1200 },
-                    { name: 'Napo', coords: [-1.0, -77.8], annual: 3000, wet: 4000, dry: 2000 },
-                    { name: 'Orellana', coords: [-0.5, -76.6], annual: 2800, wet: 3800, dry: 1800 },
-                    { name: 'Pastaza', coords: [-1.5, -78.0], annual: 2600, wet: 3600, dry: 1600 },
-                    { name: 'Pichincha', coords: [-0.2, -78.5], annual: 1300, wet: 1950, dry: 650 },
-                    { name: 'Santa Elena', coords: [-2.2, -80.9], annual: 300, wet: 450, dry: 150 },
-                    { name: 'Santo Domingo', coords: [-0.2, -79.2], annual: 2400, wet: 3400, dry: 1400 },
-                    { name: 'Sucumbíos', coords: [0.1, -76.9], annual: 3200, wet: 4200, dry: 2200 },
-                    { name: 'Tungurahua', coords: [-1.3, -78.6], annual: 800, wet: 1200, dry: 400 },
-                    { name: 'Zamora Chinchipe', coords: [-4.1, -78.7], annual: 2000, wet: 3000, dry: 1000 }
-                ];
-
-                // Generate monthly data for each province
-                provinces.forEach(province => {
-                    province.monthly = [];
-                    for (let month = 0; month < 12; month++) {
-                        const wetSeason = month >= 9 || month <= 4; // Oct-May
-                        const baseValue = wetSeason ? province.wet : province.dry;
-                        const variation = Math.random() * 0.3 - 0.15; // ±15% variation
-                        province.monthly.push(Math.round(baseValue * (1 + variation) / 12));
-                    }
-                    
-                    // Add additional properties
-                    province.intensity = this.calculateIntensity(province.annual);
-                    province.rainyDays = this.calculateRainyDays(province.annual);
-                });
-
-                return provinces;
-            }
-
-            calculateIntensity(precipitation) {
-                if (precipitation > 2500) return 'Muy Alta';
-                if (precipitation > 1500) return 'Alta';
-                if (precipitation > 800) return 'Media';
-                if (precipitation > 400) return 'Baja';
-                return 'Muy Baja';
-            }
-
-            calculateRainyDays(precipitation) {
-                // Estimate rainy days based on precipitation
-                return Math.round(precipitation / 8); // Rough approximation
-            }
-
-            initializeMap() {
-                this.map = L.map('map').setView([-1.8, -78.2], 6);
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(this.map);
-
-                // Add province markers
-                this.provinceLayer = L.layerGroup().addTo(this.map);
-                this.updateVisualization();
-            }
-
-            getColor(value, type) {
-                if (type === 'precipitation') {
-                    if (value > 2500) return '#d73027';
-                    if (value > 1500) return '#fc8d59';
-                    if (value > 800) return '#fee08b';
-                    if (value > 400) return '#e0f3f8';
-                    return '#91bfdb';
-                } else if (type === 'intensity') {
-                    const colors = {
-                        'Muy Alta': '#d73027',
-                        'Alta': '#fc8d59',
-                        'Media': '#fee08b',
-                        'Baja': '#e0f3f8',
-                        'Muy Baja': '#91bfdb'
-                    };
-                    return colors[value] || '#cccccc';
-                }
-                return '#4a90e2';
-            }
-
-            updateVisualization() {
-                this.provinceLayer.clearLayers();
-
-                this.precipitationData.forEach(province => {
-                    let value, displayValue;
-                    
-                    if (this.currentDataType === 'precipitation') {
-                        value = province[this.currentSeason];
-                        displayValue = `${value} mm`;
-                    } else if (this.currentDataType === 'intensity') {
-                        value = province.intensity;
-                        displayValue = value;
-                    } else if (this.currentDataType === 'days') {
-                        value = province.rainyDays;
-                        displayValue = `${value} días`;
-                    }
-
-                    const color = this.getColor(value, this.currentDataType);
-                    
-                    const marker = L.circleMarker(province.coords, {
-                        radius: this.getMarkerSize(value),
-                        fillColor: color,
-                        color: '#ffffff',
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    });
-
-                    const popupContent = this.createPopupContent(province);
-                    marker.bindPopup(popupContent);
-                    
-                    marker.on('click', () => {
-                        this.showProvinceDetails(province);
-                    });
-
-                    this.provinceLayer.addLayer(marker);
-                });
-
-                this.updateStatistics();
-            }
-
-            getMarkerSize(value) {
-                if (typeof value === 'string') return 15; // For intensity
-                return Math.max(8, Math.min(25, value / 150)); // Scale based on precipitation
-            }
-
-            createPopupContent(province) {
-                const precipValue = province[this.currentSeason];
-                return `
-                    <div style="font-family: inherit;">
-                        <h4 style="margin: 0 0 10px 0; color: #2c3e50;">${province.name}</h4>
-                        <div style="margin-bottom: 5px;"><strong>Precipitación:</strong> ${precipValue} mm</div>
-                        <div style="margin-bottom: 5px;"><strong>Intensidad:</strong> ${province.intensity}</div>
-                        <div style="margin-bottom: 5px;"><strong>Días de lluvia:</strong> ${province.rainyDays}</div>
-                        <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                            Haz clic para más detalles
-                        </div>
+        // Configuración Supabase
+        const SUPABASE_URL = 'https://dpgnbjydxxyugorzfodu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZ25ianlkeHh5dWdvcnpmb2R1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Mzg0NjYsImV4cCI6MjA2NjAxNDQ2Nn0.QB6wkPO_HnCP1AuG3U9XwXHRYk7dOwflfFT_ONdn5Zg';
+        
+        let map;
+        let riosLayer = L.layerGroup();
+        let viasLayer = L.layerGroup();
+        let pobladosLayer = L.layerGroup();
+        let curvasLayer = L.layerGroup();
+        let areasLayer = L.layerGroup();
+        let allRios = [];
+        let allVias = [];
+        let allPoblados = [];
+        let allCurvas = [];
+        let allAreas = [];
+        let currentLayer = 'rios';
+        let hasDataLoaded = false;
+        
+        // Inicializar mapa
+        function initMap() {
+            map = L.map('map').setView([-1.8312, -78.1834], 7);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            riosLayer.addTo(map);
+            
+            // Leyenda
+            const legend = L.control({position: 'bottomright'});
+            legend.onAdd = function() {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML = `
+                    <div class="legend-title">Leyenda</div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color:#1e90ff"></div>
+                        <span>Ríos</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color:#2f4f4f"></div>
+                        <span>Vías</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-circle" style="background-color:#ff8c00"></div>
+                        <span>Poblados</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color:#ff0000"></div>
+                        <span>Curvas (Alta)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color:#ff9900"></div>
+                        <span>Curvas (Media)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color:#00ff00"></div>
+                        <span>Curvas (Baja)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-area" style="background-color:#8a2be2"></div>
+                        <span>Áreas Protegidas</span>
                     </div>
                 `;
-            }
-
-            showProvinceDetails(province) {
-                const panel = document.getElementById('province-panel');
-                const details = document.getElementById('province-details');
+                return div;
+            };
+            legend.addTo(map);
+        }
+        
+        // Obtener color según la elevación para curvas
+        function getColorByElevation(elevation) {
+            if (elevation > 3000) return '#ff0000';
+            if (elevation > 1500) return '#ff9900';
+            return '#00ff00';
+        }
+        
+        // Actualizar barra de progreso
+        function updateProgress(percent, text) {
+            const progressBar = document.getElementById('progressBar');
+            const loadingDetail = document.getElementById('loadingDetail');
+            
+            if (progressBar) progressBar.style.width = percent + '%';
+            if (loadingDetail) loadingDetail.textContent = text;
+        }
+        
+        // Cargar datos de Supabase
+        async function cargarDatos() {
+            const loading = document.getElementById('loading');
+            const infoText = document.getElementById('infoText');
+            
+            try {
+                infoText.textContent = 'Conectando con Supabase...';
+                updateProgress(10, 'Iniciando conexión');
                 
-                const precipValue = province[this.currentSeason];
+                // 1. Cargar ríos (rio_l)
+                updateProgress(15, 'Cargando ríos...');
+                const riosResponse = await fetch(`${SUPABASE_URL}/rest/v1/rio_l?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                details.innerHTML = `
-                    <div class="province-info">
-                        <div class="province-name">${province.name}</div>
-                        <div class="province-data">
-                            <span>Precipitación Anual:</span>
-                            <span class="data-value">${province.annual} mm</span>
-                        </div>
-                        <div class="province-data">
-                            <span>Época Lluviosa:</span>
-                            <span class="data-value">${province.wet} mm</span>
-                        </div>
-                        <div class="province-data">
-                            <span>Época Seca:</span>
-                            <span class="data-value">${province.dry} mm</span>
-                        </div>
-                        <div class="province-data">
-                            <span>Intensidad:</span>
-                            <span class="data-value">${province.intensity}</span>
-                        </div>
-                        <div class="province-data">
-                            <span>Días de lluvia/año:</span>
-                            <span class="data-value">${province.rainyDays}</span>
-                        </div>
-                    </div>
-                `;
-                
-                panel.style.display = 'block';
-            }
-
-            updateStatistics() {
-                const values = this.precipitationData.map(p => p[this.currentSeason]);
-                const max = Math.max(...values);
-                const min = Math.min(...values);
-                const avg = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
-
-                document.getElementById('max-precipitation').textContent = max.toLocaleString();
-                document.getElementById('min-precipitation').textContent = min.toLocaleString();
-                document.getElementById('avg-precipitation').textContent = avg.toLocaleString();
-            }
-
-            startAnimation() {
-                if (this.isAnimating) {
-                    this.stopAnimation();
-                    return;
+                if (!riosResponse.ok) {
+                    const errorText = await riosResponse.text();
+                    throw new Error(`Error cargando ríos: ${riosResponse.status} - ${errorText}`);
                 }
-
-                this.isAnimating = true;
-                document.querySelector('#play-animation i').className = 'fas fa-pause';
                 
-                this.animationInterval = setInterval(() => {
-                    this.currentMonth = (this.currentMonth + 1) % 12;
-                    document.getElementById('current-month').textContent = 
-                        `${this.months[this.currentMonth]} 2024`;
-                    
-                    // Update visualization with monthly data
-                    this.updateMonthlyVisualization();
-                }, 1000);
-            }
-
-            stopAnimation() {
-                this.isAnimating = false;
-                document.querySelector('#play-animation i').className = 'fas fa-play';
-                clearInterval(this.animationInterval);
-            }
-
-            updateMonthlyVisualization() {
-                this.provinceLayer.clearLayers();
-
-                this.precipitationData.forEach(province => {
-                    const monthlyValue = province.monthly[this.currentMonth];
-                    const color = this.getColor(monthlyValue * 12, 'precipitation'); // Annualize for color
-                    
-                    const marker = L.circleMarker(province.coords, {
-                        radius: Math.max(5, monthlyValue / 20),
-                        fillColor: color,
-                        color: '#ffffff',
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    });
-
-                    const popupContent = `
-                        <div style="font-family: inherit;">
-                            <h4 style="margin: 0 0 10px 0; color: #2c3e50;">${province.name}</h4>
-                            <div><strong>${this.months[this.currentMonth]}:</strong> ${monthlyValue} mm</div>
-                        </div>
-                    `;
-                    marker.bindPopup(popupContent);
-                    
-                    this.provinceLayer.addLayer(marker);
+                allRios = await riosResponse.json();
+                procesarRios(allRios);
+                document.getElementById('riosStat').textContent = `Ríos: ${allRios.length}`;
+                
+                // 2. Cargar vías (via_l)
+                updateProgress(25, 'Cargando vías...');
+                const viasResponse = await fetch(`${SUPABASE_URL}/rest/v1/via_l?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
-            }
-
-            setupEventListeners() {
-                document.getElementById('season-select').addEventListener('change', (e) => {
-                    this.currentSeason = e.target.value;
-                    this.updateVisualization();
+                
+                if (!viasResponse.ok) {
+                    const errorText = await viasResponse.text();
+                    throw new Error(`Error cargando vías: ${viasResponse.status} - ${errorText}`);
+                }
+                
+                allVias = await viasResponse.json();
+                procesarVias(allVias);
+                document.getElementById('viasStat').textContent = `Vías: ${allVias.length}`;
+                
+                // 3. Cargar poblados (poblado_p)
+                updateProgress(35, 'Cargando poblados...');
+                const pobladosResponse = await fetch(`${SUPABASE_URL}/rest/v1/poblado_p?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
-
-                document.getElementById('data-type').addEventListener('change', (e) => {
-                    this.currentDataType = e.target.value;
-                    this.updateVisualization();
+                
+                if (!pobladosResponse.ok) {
+                    const errorText = await pobladosResponse.text();
+                    throw new Error(`Error cargando poblados: ${pobladosResponse.status} - ${errorText}`);
+                }
+                
+                allPoblados = await pobladosResponse.json();
+                procesarPoblados(allPoblados);
+                document.getElementById('pobladosStat').textContent = `Poblados: ${allPoblados.length}`;
+                
+                // 4. Cargar curvas de nivel (curva_nivel_l)
+                updateProgress(55, 'Cargando curvas de nivel...');
+                const curvasResponse = await fetch(`${SUPABASE_URL}/rest/v1/curva_nivel_l?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
-
-                document.getElementById('play-animation').addEventListener('click', () => {
-                    this.startAnimation();
+                
+                if (!curvasResponse.ok) {
+                    const errorText = await curvasResponse.text();
+                    throw new Error(`Error cargando curvas: ${curvasResponse.status} - ${errorText}`);
+                }
+                
+                allCurvas = await curvasResponse.json();
+                procesarCurvas(allCurvas);
+                document.getElementById('curvasStat').textContent = `Curvas: ${allCurvas.length}`;
+                
+                // 5. Cargar áreas protegidas (nombres_areas_p)
+                updateProgress(75, 'Cargando áreas protegidas...');
+                const areasResponse = await fetch(`${SUPABASE_URL}/rest/v1/nombres_areas_p?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
+                
+                if (!areasResponse.ok) {
+                    const errorText = await areasResponse.text();
+                    throw new Error(`Error cargando áreas: ${areasResponse.status} - ${errorText}`);
+                }
+                
+                allAreas = await areasResponse.json();
+                procesarAreas(allAreas);
+                document.getElementById('areasStat').textContent = `Áreas: ${allAreas.length}`;
+                
+                // Finalizar carga
+                updateProgress(100, 'Carga completada');
+                setTimeout(() => {
+                    loading.classList.add('hidden');
+                    hasDataLoaded = true;
+                    infoText.textContent = `✅ Datos cargados correctamente`;
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                loading.classList.add('hidden');
+                infoText.textContent = `❌ Error: ${error.message}`;
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.innerHTML = `
+                    <strong>Error al cargar los datos:</strong> ${error.message}<br>
+                    Verifique: 
+                    <ul>
+                        <li>La conexión a internet</li>
+                        <li>La configuración de Supabase</li>
+                        <li>Los permisos de las tablas</li>
+                    </ul>
+                `;
+                document.querySelector('.map-container').appendChild(errorDiv);
             }
         }
-
-        // Initialize the portal when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new EcuadorPrecipitationPortal();
+        
+        // Procesar ríos
+        function procesarRios(rios) {
+            riosLayer.clearLayers();
+            
+            if (!rios || rios.length === 0) {
+                console.warn('No hay datos de ríos para procesar');
+                return;
+            }
+            
+            const features = [];
+            
+            for (const rio of rios) {
+                try {
+                    if (!rio.geom) continue;
+                    
+                    // Manejar geometría
+                    let geometry = rio.geom;
+                    if (typeof geometry === 'string') {
+                        try {
+                            geometry = JSON.parse(geometry);
+                        } catch (e) {
+                            console.warn('Error parseando geometría de río:', rio);
+                            continue;
+                        }
+                    }
+                    
+                    // Crear feature
+                    const feature = {
+                        type: 'Feature',
+                        properties: rio,
+                        geometry: geometry
+                    };
+                    
+                    features.push(feature);
+                    
+                } catch (error) {
+                    console.warn('Error procesando río:', rio, error);
+                }
+            }
+            
+            // Crear capa GeoJSON
+            if (features.length > 0) {
+                const geoJsonLayer = L.geoJSON(features, {
+                    style: {
+                        color: '#1e90ff',
+                        weight: 2,
+                        opacity: 0.8
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const popupContent = crearPopupRio(feature.properties);
+                        layer.bindPopup(popupContent);
+                    }
+                });
+                
+                geoJsonLayer.addTo(riosLayer);
+            }
+        }
+        
+        // Procesar vías
+        function procesarVias(vias) {
+            viasLayer.clearLayers();
+            
+            if (!vias || vias.length === 0) {
+                console.warn('No hay datos de vías para procesar');
+                return;
+            }
+            
+            const features = [];
+            
+            for (const via of vias) {
+                try {
+                    if (!via.geom) continue;
+                    
+                    // Manejar geometría
+                    let geometry = via.geom;
+                    if (typeof geometry === 'string') {
+                        try {
+                            geometry = JSON.parse(geometry);
+                        } catch (e) {
+                            console.warn('Error parseando geometría de vía:', via);
+                            continue;
+                        }
+                    }
+                    
+                    // Crear feature
+                    const feature = {
+                        type: 'Feature',
+                        properties: via,
+                        geometry: geometry
+                    };
+                    
+                    features.push(feature);
+                    
+                } catch (error) {
+                    console.warn('Error procesando vía:', via, error);
+                }
+            }
+            
+            // Crear capa GeoJSON
+            if (features.length > 0) {
+                const geoJsonLayer = L.geoJSON(features, {
+                    style: {
+                        color: '#2f4f4f',
+                        weight: 3,
+                        opacity: 0.8
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const popupContent = crearPopupVia(feature.properties);
+                        layer.bindPopup(popupContent);
+                    }
+                });
+                
+                geoJsonLayer.addTo(viasLayer);
+            }
+        }
+        
+        // Procesar poblados
+        function procesarPoblados(poblados) {
+            pobladosLayer.clearLayers();
+            
+            if (!poblados || poblados.length === 0) {
+                console.warn('No hay datos de poblados para procesar');
+                return;
+            }
+            
+            const features = [];
+            
+            for (const poblado of poblados) {
+                try {
+                    if (!poblado.geom) continue;
+                    
+                    // Manejar geometría
+                    let geometry = poblado.geom;
+                    if (typeof geometry === 'string') {
+                        try {
+                            geometry = JSON.parse(geometry);
+                        } catch (e) {
+                            console.warn('Error parseando geometría de poblado:', poblado);
+                            continue;
+                        }
+                    }
+                    
+                    // Crear feature
+                    const feature = {
+                        type: 'Feature',
+                        properties: poblado,
+                        geometry: geometry
+                    };
+                    
+                    features.push(feature);
+                    
+                } catch (error) {
+                    console.warn('Error procesando poblado:', poblado, error);
+                }
+            }
+            
+            // Crear capa GeoJSON
+            if (features.length > 0) {
+                const geoJsonLayer = L.geoJSON(features, {
+                    pointToLayer: function(feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 6,
+                            fillColor: '#ff8c00',
+                            color: '#cc7000',
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        });
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const popupContent = crearPopupPoblado(feature.properties);
+                        layer.bindPopup(popupContent);
+                    }
+                });
+                
+                geoJsonLayer.addTo(pobladosLayer);
+            }
+        }
+        
+        // Procesar curvas de nivel
+        function procesarCurvas(curvas) {
+            curvasLayer.clearLayers();
+            
+            if (!curvas || curvas.length === 0) {
+                console.warn('No hay datos de curvas para procesar');
+                return;
+            }
+            
+            const features = [];
+            
+            for (const curva of curvas) {
+                try {
+                    if (!curva.geom) continue;
+                    
+                    // Manejar geometría
+                    let geometry = curva.geom;
+                    if (typeof geometry === 'string') {
+                        try {
+                            geometry = JSON.parse(geometry);
+                        } catch (e) {
+                            console.warn('Error parseando geometría de curva:', curva);
+                            continue;
+                        }
+                    }
+                    
+                    // Extraer elevación (suponiendo que está en el campo "crv")
+                    const elevation = curva.crv || 0;
+                    
+                    // Crear feature
+                    const feature = {
+                        type: 'Feature',
+                        properties: {
+                            ...curva,
+                            elevation: elevation
+                        },
+                        geometry: geometry
+                    };
+                    
+                    features.push(feature);
+                    
+                } catch (error) {
+                    console.warn('Error procesando curva:', curva, error);
+                }
+            }
+            
+            // Crear capa GeoJSON
+            if (features.length > 0) {
+                const geoJsonLayer = L.geoJSON(features, {
+                    style: function(feature) {
+                        return {
+                            color: getColorByElevation(feature.properties.elevation || 0),
+                            weight: 1,
+                            opacity: 0.7
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const popupContent = crearPopupCurva(feature.properties);
+                        layer.bindPopup(popupContent);
+                    }
+                });
+                
+                geoJsonLayer.addTo(curvasLayer);
+            }
+        }
+        
+        // Procesar áreas protegidas
+        function procesarAreas(areas) {
+            areasLayer.clearLayers();
+            
+            if (!areas || areas.length === 0) {
+                console.warn('No hay datos de áreas para procesar');
+                return;
+            }
+            
+            const features = [];
+            
+            for (const area of areas) {
+                try {
+                    if (!area.geom) continue;
+                    
+                    // Manejar geometría
+                    let geometry = area.geom;
+                    if (typeof geometry === 'string') {
+                        try {
+                            geometry = JSON.parse(geometry);
+                        } catch (e) {
+                            console.warn('Error parseando geometría de área:', area);
+                            continue;
+                        }
+                    }
+                    
+                    // Crear feature
+                    const feature = {
+                        type: 'Feature',
+                        properties: area,
+                        geometry: geometry
+                    };
+                    
+                    features.push(feature);
+                    
+                } catch (error) {
+                    console.warn('Error procesando área:', area, error);
+                }
+            }
+            
+            // Crear capa GeoJSON
+            if (features.length > 0) {
+                const geoJsonLayer = L.geoJSON(features, {
+                    style: {
+                        color: '#8a2be2',
+                        weight: 2,
+                        opacity: 0.8,
+                        fillColor: '#8a2be2',
+                        fillOpacity: 0.3
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const popupContent = crearPopupArea(feature.properties);
+                        layer.bindPopup(popupContent);
+                    }
+                });
+                
+                geoJsonLayer.addTo(areasLayer);
+            }
+        }
+        
+        // Crear popup para ríos
+        function crearPopupRio(rio) {
+            return `
+                <div class="popup-content">
+                    <h3>${rio.nam || 'Río'}</h3>
+                    ${rio.fcode ? `<div class="field"><strong>Código:</strong> <span>${rio.fcode}</span></div>` : ''}
+                    ${rio.descripcio ? `<div class="field"><strong>Descripción:</strong> <span>${rio.descripcio}</span></div>` : ''}
+                    ${rio.naz ? `<div class="field"><strong>Naz:</strong> <span>${rio.naz}</span></div>` : ''}
+                    ${rio.sec ? `<div class="field"><strong>Sec:</strong> <span>${rio.sec}</span></div>` : ''}
+                    ${rio.sec_desc ? `<div class="field"><strong>Sec Desc:</strong> <span>${rio.sec_desc}</span></div>` : ''}
+                    ${rio.hyp ? `<div class="field"><strong>Hyp:</strong> <span>${rio.hyp}</span></div>` : ''}
+                    ${rio.hyp_desc ? `<div class="field"><strong>Hyp Desc:</strong> <span>${rio.hyp_desc}</span></div>` : ''}
+                    ${rio.txt ? `<div class="field"><strong>Info:</strong> <span>${rio.txt}</span></div>` : ''}
+                    ${rio.Shape_Leng ? `<div class="field"><strong>Longitud:</strong> <span>${rio.Shape_Leng.toFixed(2)} m</span></div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Crear popup para vías
+        function crearPopupVia(via) {
+            return `
+                <div class="popup-content">
+                    <h3>${via.nam || 'Vía'}</h3>
+                    ${via.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${via.descriptio}</span></div>` : ''}
+                    ${via.acc ? `<div class="field"><strong>Acc:</strong> <span>${via.acc}</span></div>` : ''}
+                    ${via.acc_desc ? `<div class="field"><strong>Acc Desc:</strong> <span>${via.acc_desc}</span></div>` : ''}
+                    ${via.rst ? `<div class="field"><strong>Rst:</strong> <span>${via.rst}</span></div>` : ''}
+                    ${via.rst_desc ? `<div class="field"><strong>Rst Desc:</strong> <span>${via.rst_desc}</span></div>` : ''}
+                    ${via.typ ? `<div class="field"><strong>Typ:</strong> <span>${via.typ}</span></div>` : ''}
+                    ${via.typ_desc ? `<div class="field"><strong>Typ Desc:</strong> <span>${via.typ_desc}</span></div>` : ''}
+                    ${via.loc ? `<div class="field"><strong>Loc:</strong> <span>${via.loc}</span></div>` : ''}
+                    ${via.loc_desc ? `<div class="field"><strong>Loc Desc:</strong> <span>${via.loc_desc}</span></div>` : ''}
+                    ${via.txt ? `<div class="field"><strong>Info:</strong> <span>${via.txt}</span></div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Crear popup para poblados
+        function crearPopupPoblado(poblado) {
+            return `
+                <div class="popup-content">
+                    <h3>${poblado.nam || 'Poblado'}</h3>
+                    ${poblado.fcode ? `<div class="field"><strong>Código:</strong> <span>${poblado.fcode}</span></div>` : ''}
+                    ${poblado.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${poblado.descriptio}</span></div>` : ''}
+                    ${poblado.naz ? `<div class="field"><strong>Naz:</strong> <span>${poblado.naz}</span></div>` : ''}
+                    ${poblado.ppt ? `<div class="field"><strong>Ppt:</strong> <span>${poblado.ppt}</span></div>` : ''}
+                    ${poblado.ppt_desc ? `<div class="field"><strong>Ppt Desc:</strong> <span>${poblado.ppt_desc}</span></div>` : ''}
+                    ${poblado.nuts ? `<div class="field"><strong>Nuts:</strong> <span>${poblado.nuts}</span></div>` : ''}
+                    ${poblado.txt ? `<div class="field"><strong>Info:</strong> <span>${poblado.txt}</span></div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Crear popup para curvas de nivel
+        function crearPopupCurva(curva) {
+            return `
+                <div class="popup-content">
+                    <h3>${curva.foods || 'Curva de Nivel'}</h3>
+                    ${curva.id ? `<div class="field"><strong>ID:</strong> <span>${curva.id}</span></div>` : ''}
+                    ${curva.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${curva.descriptio}</span></div>` : ''}
+                    ${curva.acc ? `<div class="field"><strong>Acc:</strong> <span>${curva.acc}</span></div>` : ''}
+                    ${curva.acc_desc ? `<div class="field"><strong>Acc Desc:</strong> <span>${curva.acc_desc}</span></div>` : ''}
+                    ${curva.hqc ? `<div class="field"><strong>HQC:</strong> <span>${curva.hqc}</span></div>` : ''}
+                    ${curva.hqc_desc ? `<div class="field"><strong>HQC Desc:</strong> <span>${curva.hqc_desc}</span></div>` : ''}
+                    ${curva.ela ? `<div class="field"><strong>ELA:</strong> <span>${curva.ela}</span></div>` : ''}
+                    ${curva.ela_desc ? `<div class="field"><strong>ELA Desc:</strong> <span>${curva.ela_desc}</span></div>` : ''}
+                    ${curva.crv ? `<div class="field"><strong>Elevación:</strong> <span>${curva.crv} m</span></div>` : ''}
+                    ${curva.txt ? `<div class="field"><strong>Info:</strong> <span>${curva.txt}</span></div>` : ''}
+                    ${curva.SHAPE_Leng ? `<div class="field"><strong>Longitud:</strong> <span>${curva.SHAPE_Leng.toFixed(2)} m</span></div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Crear popup para áreas protegidas
+        function crearPopupArea(area) {
+            return `
+                <div class="popup-content">
+                    <h3>${area.nam || 'Área Protegida'}</h3>
+                    ${area.id ? `<div class="field"><strong>ID:</strong> <span>${area.id}</span></div>` : ''}
+                    ${area.icode ? `<div class="field"><strong>Código:</strong> <span>${area.icode}</span></div>` : ''}
+                    ${area.descriptio ? `<div class="field"><strong>Descripción:</strong> <span>${area.descriptio}</span></div>` : ''}
+                    ${area.txt ? `<div class="field"><strong>Info:</strong> <span>${area.txt}</span></div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Alternar entre capas
+        function toggleLayer(layer) {
+            currentLayer = layer;
+            
+            // Ocultar todas las capas primero
+            riosLayer.remove();
+            viasLayer.remove();
+            pobladosLayer.remove();
+            curvasLayer.remove();
+            areasLayer.remove();
+            
+            // Quitar clase activa de todos los botones
+            document.querySelectorAll('.layer-toggle button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Activar la capa seleccionada
+            if (layer === 'rios') {
+                riosLayer.addTo(map);
+                document.getElementById('toggleRios').classList.add('active');
+                document.getElementById('infoText').textContent = `✅ Capa de ríos activa`;
+                
+                // Ajustar vista si hay datos
+                if (riosLayer.getLayers().length > 0) {
+                    const group = new L.featureGroup(riosLayer.getLayers());
+                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                }
+            } 
+            else if (layer === 'vias') {
+                viasLayer.addTo(map);
+                document.getElementById('toggleVias').classList.add('active');
+                document.getElementById('infoText').textContent = `✅ Capa de vías activa`;
+                
+                // Ajustar vista si hay datos
+                if (viasLayer.getLayers().length > 0) {
+                    const group = new L.featureGroup(viasLayer.getLayers());
+                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                }
+            } 
+            else if (layer === 'poblados') {
+                pobladosLayer.addTo(map);
+                document.getElementById('togglePoblados').classList.add('active');
+                document.getElementById('infoText').textContent = `✅ Capa de poblados activa`;
+                
+                // Ajustar vista si hay datos
+                if (pobladosLayer.getLayers().length > 0) {
+                    const group = new L.featureGroup(pobladosLayer.getLayers());
+                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                }
+            }
+            else if (layer === 'curvas') {
+                curvasLayer.addTo(map);
+                document.getElementById('toggleCurvas').classList.add('active');
+                document.getElementById('infoText').textContent = `✅ Capa de curvas activa`;
+                
+                // Ajustar vista si hay datos
+                if (curvasLayer.getLayers().length > 0) {
+                    const group = new L.featureGroup(curvasLayer.getLayers());
+                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                }
+            }
+            else if (layer === 'areas') {
+                areasLayer.addTo(map);
+                document.getElementById('toggleAreas').classList.add('active');
+                document.getElementById('infoText').textContent = `✅ Capa de áreas activa`;
+                
+                // Ajustar vista si hay datos
+                if (areasLayer.getLayers().length > 0) {
+                    const group = new L.featureGroup(areasLayer.getLayers());
+                    map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                }
+            }
+        }
+        
+        // Función de búsqueda
+        function buscarElemento() {
+            if (!hasDataLoaded) {
+                alert('Los datos aún se están cargando. Por favor espere.');
+                return;
+            }
+            
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) return;
+            
+            let elementosEncontrados = [];
+            let tipoElemento = '';
+            
+            if (currentLayer === 'rios') {
+                elementosEncontrados = allRios.filter(rio => {
+                    const campos = [
+                        rio.nam,
+                        rio.descripcio,
+                        rio.naz,
+                        rio.txt
+                    ].filter(Boolean).map(c => c.toString().toLowerCase());
+                    
+                    return campos.some(campo => campo.includes(searchTerm.toLowerCase()));
+                });
+                tipoElemento = 'ríos';
+                
+                // Procesar resultados
+                if (elementosEncontrados.length > 0) {
+                    procesarRios(elementosEncontrados);
+                    
+                    // Ajustar vista a los resultados
+                    if (riosLayer.getLayers().length > 0) {
+                        const group = new L.featureGroup(riosLayer.getLayers());
+                        map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                    }
+                }
+            } 
+            else if (currentLayer === 'vias') {
+                elementosEncontrados = allVias.filter(via => {
+                    const campos = [
+                        via.nam,
+                        via.descriptio,
+                        via.acc_desc,
+                        via.rst_desc,
+                        via.txt
+                    ].filter(Boolean).map(c => c.toString().toLowerCase());
+                    
+                    return campos.some(campo => campo.includes(searchTerm.toLowerCase()));
+                });
+                tipoElemento = 'vías';
+                
+                // Procesar resultados
+                if (elementosEncontrados.length > 0) {
+                    procesarVias(elementosEncontrados);
+                    
+                    // Ajustar vista a los resultados
+                    if (viasLayer.getLayers().length > 0) {
+                        const group = new L.featureGroup(viasLayer.getLayers());
+                        map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                    }
+                }
+            } 
+            else if (currentLayer === 'poblados') {
+                elementosEncontrados = allPoblados.filter(poblado => {
+                    const campos = [
+                        poblado.nam,
+                        poblado.descriptio,
+                        poblado.naz,
+                        poblado.txt
+                    ].filter(Boolean).map(c => c.toString().toLowerCase());
+                    
+                    return campos.some(campo => campo.includes(searchTerm.toLowerCase()));
+                });
+                tipoElemento = 'poblados';
+                
+                // Procesar resultados
+                if (elementosEncontrados.length > 0) {
+                    procesarPoblados(elementosEncontrados);
+                    
+                    // Ajustar vista a los resultados
+                    if (pobladosLayer.getLayers().length > 0) {
+                        const group = new L.featureGroup(pobladosLayer.getLayers());
+                        map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                    }
+                }
+            }
+            else if (currentLayer === 'curvas') {
+                elementosEncontrados = allCurvas.filter(curva => {
+                    const campos = [
+                        curva.foods,
+                        curva.descriptio,
+                        curva.acc_desc,
+                        curva.txt
+                    ].filter(Boolean).map(c => c.toString().toLowerCase());
+                    
+                    return campos.some(campo => campo.includes(searchTerm.toLowerCase()));
+                });
+                tipoElemento = 'curvas de nivel';
+                
+                // Procesar resultados
+                if (elementosEncontrados.length > 0) {
+                    procesarCurvas(elementosEncontrados);
+                    
+                    // Ajustar vista a los resultados
+                    if (curvasLayer.getLayers().length > 0) {
+                        const group = new L.featureGroup(curvasLayer.getLayers());
+                        map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                    }
+                }
+            }
+            else if (currentLayer === 'areas') {
+                elementosEncontrados = allAreas.filter(area => {
+                    const campos = [
+                        area.nam,
+                        area.descriptio,
+                        area.icode,
+                        area.txt
+                    ].filter(Boolean).map(c => c.toString().toLowerCase());
+                    
+                    return campos.some(campo => campo.includes(searchTerm.toLowerCase()));
+                });
+                tipoElemento = 'áreas protegidas';
+                
+                // Procesar resultados
+                if (elementosEncontrados.length > 0) {
+                    procesarAreas(elementosEncontrados);
+                    
+                    // Ajustar vista a los resultados
+                    if (areasLayer.getLayers().length > 0) {
+                        const group = new L.featureGroup(areasLayer.getLayers());
+                        map.fitBounds(group.getBounds(), { padding: [20, 20] });
+                    }
+                }
+            }
+            
+            if (elementosEncontrados.length === 0) {
+                document.getElementById('infoText').textContent = `❌ No se encontraron ${tipoElemento} con "${searchTerm}"`;
+            } else {
+                document.getElementById('infoText').textContent = `🔍 ${elementosEncontrados.length} ${tipoElemento} encontrados para "${searchTerm}"`;
+            }
+        }
+        
+        // Limpiar búsqueda
+        function limpiarBusqueda() {
+            document.getElementById('searchInput').value = '';
+            
+            if (currentLayer === 'rios') {
+                procesarRios(allRios);
+                document.getElementById('infoText').textContent = `✅ Capa de ríos activa`;
+            } 
+            else if (currentLayer === 'vias') {
+                procesarVias(allVias);
+                document.getElementById('infoText').textContent = `✅ Capa de vías activa`;
+            } 
+            else if (currentLayer === 'poblados') {
+                procesarPoblados(allPoblados);
+                document.getElementById('infoText').textContent = `✅ Capa de poblados activa`;
+            }
+            else if (currentLayer === 'curvas') {
+                procesarCurvas(allCurvas);
+                document.getElementById('infoText').textContent = `✅ Capa de curvas activa`;
+            }
+            else if (currentLayer === 'areas') {
+                procesarAreas(allAreas);
+                document.getElementById('infoText').textContent = `✅ Capa de áreas activa`;
+            }
+        }
+        
+        // Inicializar cuando se carga la página
+        window.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            
+            // Configurar botones de capas
+            document.getElementById('toggleRios').addEventListener('click', () => toggleLayer('rios'));
+            document.getElementById('toggleVias').addEventListener('click', () => toggleLayer('vias'));
+            document.getElementById('togglePoblados').addEventListener('click', () => toggleLayer('poblados'));
+            document.getElementById('toggleCurvas').addEventListener('click', () => toggleLayer('curvas'));
+            document.getElementById('toggleAreas').addEventListener('click', () => toggleLayer('areas'));
+            
+            cargarDatos();
+            
+            // Permitir búsqueda con Enter
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') buscarElemento();
+            });
         });
     </script>
 </body>
