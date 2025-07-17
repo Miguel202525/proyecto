@@ -388,6 +388,23 @@
             background: #218838;
         }
         
+        .report-btn {
+            background: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .report-btn:hover {
+            background: #5a32a3;
+        }
+        
         .toggle-filters-btn {
             background: #6c757d;
             color: white;
@@ -403,6 +420,79 @@
         
         .toggle-filters-btn:hover {
             background: #5a6268;
+        }
+        
+        .report-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 1.5rem;
+            z-index: 1000;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .report-container.active {
+            display: block;
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        
+        .report-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e5799;
+        }
+        
+        .close-report {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .report-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .report-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .report-section-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #207cca;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .report-item {
+            margin-bottom: 0.3rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .report-item:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #1e5799;
         }
         
         @media (max-width: 768px) {
@@ -431,6 +521,13 @@
             .stats {
                 width: 100%;
                 justify-content: space-between;
+            }
+            
+            .report-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
             }
         }
     </style>
@@ -499,6 +596,9 @@
                 <button class="export-btn" onclick="exportarDatos()">
                     <i class="fas fa-file-export"></i> Exportar
                 </button>
+                <button class="report-btn" onclick="generarReporte()">
+                    <i class="fas fa-file-alt"></i> Reporte
+                </button>
             </div>
             
             <div class="advanced-filters" id="advancedFilters">
@@ -543,6 +643,17 @@
             </div>
         </div>
         <div id="map"></div>
+        
+        <!-- Reporte de datos -->
+        <div id="reportContainer" class="report-container">
+            <div class="report-header">
+                <div class="report-title"><i class="fas fa-file-alt"></i> Reporte de Datos</div>
+                <button class="close-report" onclick="document.getElementById('reportContainer').classList.remove('active')">&times;</button>
+            </div>
+            <div class="report-content" id="reportContent">
+                Cargando reporte...
+            </div>
+        </div>
     </div>
 
     <!-- Leaflet JS -->
@@ -584,9 +695,13 @@
             value: ''
         };
         
-        // Inicializar mapa
+        // Coordenadas centrales del Cantón Azogues
+        const AZOGUES_CENTER = [-2.7397, -78.8486];
+        const AZOGUES_ZOOM = 12;
+        
+        // Inicializar mapa centrado en Azogues
         function initMap() {
-            map = L.map('map').setView([-1.8312, -78.1834], 7);
+            map = L.map('map').setView(AZOGUES_CENTER, AZOGUES_ZOOM);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
@@ -760,6 +875,10 @@
                     loading.classList.add('hidden');
                     hasDataLoaded = true;
                     infoText.textContent = `✅ Datos cargados correctamente`;
+                    
+                    // Ajustar vista al Cantón Azogues con zoom óptimo
+                    map.setView(AZOGUES_CENTER, AZOGUES_ZOOM);
+                    
                 }, 500);
                 
             } catch (error) {
@@ -1678,6 +1797,92 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+        
+        // Generar reporte de datos
+        function generarReporte() {
+            if (!hasDataLoaded) {
+                alert('Los datos aún se están cargando. Por favor espere.');
+                return;
+            }
+            
+            const reportContainer = document.getElementById('reportContainer');
+            const reportContent = document.getElementById('reportContent');
+            
+            // Mostrar contenedor de reporte
+            reportContainer.classList.add('active');
+            
+            // Crear contenido del reporte
+            const fecha = new Date().toLocaleString();
+            let reporteHTML = `
+                <div class="report-section">
+                    <div class="report-section-title">
+                        <i class="fas fa-info-circle"></i> Información General
+                    </div>
+                    <div class="report-item">Fecha de generación: ${fecha}</div>
+                    <div class="report-item">Cantón: Azogues</div>
+                    <div class="report-item">Capa activa: ${capitalizeFirstLetter(currentLayer)}</div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="report-section-title">
+                        <i class="fas fa-layer-group"></i> Estadísticas de Capas
+                    </div>
+                    <div class="report-item">Ríos: ${allRios.length} elementos</div>
+                    <div class="report-item">Vías: ${allVias.length} elementos</div>
+                    <div class="report-item">Poblados: ${allPoblados.length} elementos</div>
+                    <div class="report-item">Curvas de nivel: ${allCurvas.length} elementos</div>
+                    <div class="report-item">Áreas protegidas: ${allAreas.length} elementos</div>
+                </div>
+            `;
+            
+            // Detalles de la capa actual
+            let capaActual = [];
+            let nombreCapa = '';
+            
+            if (currentLayer === 'rios') {
+                capaActual = allRios;
+                nombreCapa = 'Ríos';
+            } 
+            else if (currentLayer === 'vias') {
+                capaActual = allVias;
+                nombreCapa = 'Vías';
+            } 
+            else if (currentLayer === 'poblados') {
+                capaActual = allPoblados;
+                nombreCapa = 'Poblados';
+            }
+            else if (currentLayer === 'curvas') {
+                capaActual = allCurvas;
+                nombreCapa = 'Curvas de Nivel';
+            }
+            else if (currentLayer === 'areas') {
+                capaActual = allAreas;
+                nombreCapa = 'Áreas Protegidas';
+            }
+            
+            if (capaActual.length > 0) {
+                reporteHTML += `
+                    <div class="report-section">
+                        <div class="report-section-title">
+                            <i class="fas fa-map-marker-alt"></i> Detalles de la Capa Actual (${nombreCapa})
+                        </div>
+                        <div class="report-item">Total de elementos: ${capaActual.length}</div>
+                `;
+                
+                // Primeros 5 elementos
+                const primerosElementos = capaActual.slice(0, 5);
+                reporteHTML += `<div class="report-item">Primeros 5 elementos:</div>`;
+                
+                primerosElementos.forEach((elemento, index) => {
+                    let nombre = elemento.nam || elemento.descriptio || elemento.foods || 'Elemento sin nombre';
+                    reporteHTML += `<div class="report-item" style="margin-left: 20px;">${index + 1}. ${nombre}</div>`;
+                });
+                
+                reporteHTML += `</div>`;
+            }
+            
+            reportContent.innerHTML = reporteHTML;
         }
         
         // Inicializar cuando se carga la página
