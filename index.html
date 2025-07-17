@@ -495,6 +495,187 @@
             color: #1e5799;
         }
         
+        /* Estilos para el modal de reporte */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
+            color: white;
+            padding: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .form-container {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e5799;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: #1e5799;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(30, 87, 153, 0.2);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .report-map-container {
+            margin-top: 20px;
+        }
+        
+        #reportMap {
+            height: 300px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .location-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-submit {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #218838;
+        }
+        
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+        
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .btn-report {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .btn-report:hover {
+            background: #bd2130;
+        }
+        
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -528,6 +709,10 @@
                 right: 10px;
                 left: 10px;
                 max-width: none;
+            }
+            
+            .modal-content {
+                width: 95%;
             }
         }
     </style>
@@ -599,6 +784,10 @@
                 <button class="report-btn" onclick="generarReporte()">
                     <i class="fas fa-file-alt"></i> Reporte
                 </button>
+                <!-- Botón para abrir el formulario de reporte -->
+                <button class="btn-report" onclick="abrirFormularioReporte()">
+                    <i class="fas fa-exclamation-triangle"></i> Reportar Problema
+                </button>
             </div>
             
             <div class="advanced-filters" id="advancedFilters">
@@ -655,6 +844,67 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal para reportar problemas -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Reportar Problema</h2>
+                <button class="close-modal" onclick="cerrarFormularioReporte()">&times;</button>
+            </div>
+            <div class="form-container">
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label for="nombre" class="form-label"><i class="fas fa-user"></i> Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="form-input" required placeholder="Tu nombre completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tipoProblema" class="form-label"><i class="fas fa-bug"></i> Tipo de Problema</label>
+                        <select id="tipoProblema" name="tipoProblema" class="form-select" required>
+                            <option value="">Seleccione un tipo de problema</option>
+                            <option value="geometria_incorrecta">Geometría incorrecta</option>
+                            <option value="atributo_faltante">Atributo faltante</option>
+                            <option value="dato_desactualizado">Dato desactualizado</option>
+                            <option value="superposicion_capas">Superposición de capas</option>
+                            <option value="problema_visualizacion">Problema de visualización</option>
+                            <option value="otro">Otro problema</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="observaciones" class="form-label"><i class="fas fa-comment-alt"></i> Observaciones</label>
+                        <textarea id="observaciones" name="observaciones" class="form-textarea" required placeholder="Describe con detalle el problema encontrado..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-map-marker-alt"></i> Ubicación del Problema</label>
+                        <p class="location-info">Haz clic en el mapa para seleccionar la ubicación exacta</p>
+                        <div class="report-map-container">
+                            <div id="reportMap"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button type="submit" class="modal-btn btn-submit">
+                            <i class="fas fa-paper-plane"></i> Enviar Reporte
+                        </button>
+                        <button type="reset" class="modal-btn btn-reset">
+                            <i class="fas fa-redo"></i> Limpiar Formulario
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="messageSuccess" class="message success">
+                    <i class="fas fa-check-circle"></i> <span id="successText">¡Reporte enviado con éxito! Gracias por tu colaboración.</span>
+                </div>
+                
+                <div id="messageError" class="message error">
+                    <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -670,6 +920,7 @@
         const SUPABASE_URL = 'https://dpgnbjydxxyugorzfodu.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZ25ianlkeHh5dWdvcnpmb2R1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Mzg0NjYsImV4cCI6MjA2NjAxNDQ2Nn0.QB6wkPO_HnCP1AuG3U9XwXHRYk7dOwflfFT_ONdn5Zg';
         
+        // Variables globales para el geovisor
         let map;
         let riosLayer = L.layerGroup();
         let viasLayer = L.layerGroup();
@@ -695,11 +946,16 @@
             value: ''
         };
         
+        // Variables globales para el formulario
+        let reportMap;
+        let reportMarker = null;
+        let selectedLocation = null;
+        
         // Coordenadas centrales del Cantón Azogues
         const AZOGUES_CENTER = [-2.7397, -78.8486];
         const AZOGUES_ZOOM = 12;
         
-        // Inicializar mapa centrado en Azogues
+        // Inicializar mapa principal centrado en Azogues
         function initMap() {
             map = L.map('map').setView(AZOGUES_CENTER, AZOGUES_ZOOM);
             
@@ -747,6 +1003,139 @@
                 return div;
             };
             legend.addTo(map);
+        }
+        
+        // Inicializar mapa para reportes
+        function initReportMap() {
+            reportMap = L.map('reportMap').setView(AZOGUES_CENTER, AZOGUES_ZOOM);
+            
+            // Capa base de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(reportMap);
+            
+            // Evento para capturar la ubicación al hacer clic
+            reportMap.on('click', function(e) {
+                // Eliminar marcador anterior si existe
+                if (reportMarker) {
+                    reportMap.removeLayer(reportMarker);
+                }
+                
+                // Crear nuevo marcador
+                reportMarker = L.marker(e.latlng).addTo(reportMap);
+                selectedLocation = e.latlng;
+                
+                // Actualizar información de ubicación
+                document.querySelector('.location-info').innerHTML = `
+                    <i class="fas fa-check-circle" style="color:green;"></i> Ubicación seleccionada: 
+                    Latitud ${e.latlng.lat.toFixed(6)}, Longitud ${e.latlng.lng.toFixed(6)}
+                `;
+            });
+        }
+        
+        // Abrir formulario de reporte
+        function abrirFormularioReporte() {
+            document.getElementById('reportModal').style.display = 'flex';
+            // Inicializar el mapa del reporte si no está inicializado
+            if (!reportMap) {
+                setTimeout(() => {
+                    initReportMap();
+                }, 100);
+            }
+        }
+        
+        // Cerrar formulario de reporte
+        function cerrarFormularioReporte() {
+            document.getElementById('reportModal').style.display = 'none';
+        }
+        
+        // Enviar reporte a Supabase
+        async function enviarReporte(event) {
+            event.preventDefault();
+            
+            // Validar que se haya seleccionado una ubicación
+            if (!selectedLocation) {
+                showError('Por favor, selecciona una ubicación en el mapa');
+                return;
+            }
+            
+            // Obtener valores del formulario
+            const nombre = document.getElementById('nombre').value;
+            const tipoProblema = document.getElementById('tipoProblema').value;
+            const observaciones = document.getElementById('observaciones').value;
+            
+            // Datos para enviar
+            const reportData = {
+                nombre: nombre,
+                tipo_problema: tipoProblema,
+                observaciones: observaciones,
+                ubicacion: `POINT(${selectedLocation.lng} ${selectedLocation.lat})`  // Formato WKT
+            };
+            
+            try {
+                // Enviar datos a Supabase
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reportes_problemas`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(reportData)
+                });
+                
+                if (response.ok) {
+                    // Mostrar mensaje de éxito
+                    showSuccess('Reporte enviado con éxito. ¡Gracias por tu colaboración!');
+                    
+                    // Resetear formulario
+                    document.getElementById('reportForm').reset();
+                    
+                    // Eliminar marcador del mapa
+                    if (reportMarker) {
+                        reportMap.removeLayer(reportMarker);
+                        reportMarker = null;
+                    }
+                    
+                    // Resetear ubicación
+                    selectedLocation = null;
+                    document.querySelector('.location-info').innerHTML = 
+                        'Haz clic en el mapa para seleccionar la ubicación exacta';
+                        
+                    // Cerrar el formulario después de 3 segundos
+                    setTimeout(() => {
+                        cerrarFormularioReporte();
+                    }, 3000);
+                    
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error al enviar el reporte');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message || 'No se pudo enviar el reporte'}`);
+            }
+        }
+        
+        // Mostrar mensaje de éxito en el formulario
+        function showSuccess(message) {
+            const successDiv = document.getElementById('messageSuccess');
+            const errorDiv = document.getElementById('messageError');
+            
+            document.getElementById('successText').textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+        }
+        
+        // Mostrar mensaje de error en el formulario
+        function showError(message) {
+            const successDiv = document.getElementById('messageSuccess');
+            const errorDiv = document.getElementById('messageError');
+            
+            document.getElementById('errorText').textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
         }
         
         // Obtener color según la elevación para curvas
@@ -1890,6 +2279,7 @@
             // Hacer las funciones de cambio de pestaña disponibles globalmente
             window.cambiarPestana = cambiarPestana;
             
+            // Inicializar mapa principal
             initMap();
             
             // Configurar botones de capas
@@ -1906,6 +2296,22 @@
             document.getElementById('visibilityCurvas').addEventListener('click', () => toggleLayerVisibility('curvas'));
             document.getElementById('visibilityAreas').addEventListener('click', () => toggleLayerVisibility('areas'));
             
+            // Configurar evento para el formulario de reporte
+            document.getElementById('reportForm').addEventListener('submit', enviarReporte);
+            
+            // Configurar evento para resetear el formulario de reporte
+            document.querySelector('.btn-reset').addEventListener('click', function() {
+                // Resetear mapa
+                if (reportMarker) {
+                    reportMap.removeLayer(reportMarker);
+                    reportMarker = null;
+                }
+                selectedLocation = null;
+                document.querySelector('.location-info').innerHTML = 
+                    'Haz clic en el mapa para seleccionar la ubicación exacta';
+            });
+            
+            // Cargar datos geográficos
             cargarDatos();
             
             // Permitir búsqueda con Enter
